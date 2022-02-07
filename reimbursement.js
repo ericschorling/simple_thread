@@ -27,47 +27,33 @@
         }
     }
 }
-//  First day and last day of a project, or sequence of projects, is a travel day.
-//  Any day in the middle of a project, or sequence of projects, is considered a full day.
-//  If there is a gap between projects, then the days on either side of that gap are travel days.
-//  If two projects push up against each other, or overlap, then those days are full days as well.
-//  Any given day is only ever counted once, even if two projects are on the same day.
+
 /**
- * 
+ * Function to calculate the reimbursement of travel and expenses for projects that are entered in a series of arrays. 
  * @param {string[][]} arr array of arrays of strings that are passed in to provide the dates of projects and the city cost.
  * @returns {integer} reimbursement which is the total value of the time worked.
  */
 const calculateReimbursment =(arr)=>{
-    const dayInMils = 86400000
-    let reimbursementArr = []
-    
+    const dayInMils = 86400000   
     let firstDay 
     let lastDay
-    let daysCost = 0
     let daysChecked = []
     let reimbursement = 0
     //should input array be sorted?
     //Validate input of arrays and sort as needed?
-    //create a day checked array to hold already calculated days
-    //check firstday abut / overlap by set for all projects against first  and last day (only last day if not first day)
-        //check first day against first day to ensure only multi day overlap evaluated
-    //run cost for any true values and add to reimbursement amount / add day to checked array
-    //check last day abut / overlap by set for all projects in set conditional on checked day array
-    //if no overlap // abut then return travel day
-    
+        
      /**
-     * 
+     * Function to check if days of the project overlap with others to ensure that any overlap is handled as a full day.
      * @param {object} day - Datetime object for the day being checked for overlap
      * @param {integer} arrayNum - the array position in the nested array that is being checked 
      * @returns {[boolean, string]} - returns the result of the check and if it is true returns the cost of the city.
      */
-    //Raises the question of a triple+ overlap with multiple city costs, seems unlikely but may be worth checking on 
     const overlapCheck=(day, arrayNum)=>{
         //exit if last array
-        
         if(arrayNum === arr.length-1){
             return [false, null]
         }
+
         for(let arrNum = arrayNum + 1; arrNum<= arr.length; arrNum++ ){
             let checkDate = new Date(arr[arrNum][0])
             let cityCost
@@ -124,18 +110,10 @@ const calculateReimbursment =(arr)=>{
         firstDay = new Date(arr[i][0])
         lastDay = new Date(arr[i][1])
         let cityType = arr[i][2]
-        //Checking to see if the first and last day are the same, all single day projects are considered full days. 
-        //Should skip to the check for overlap only if the city isn't High cost
-
-        //Check for first array
-        //Check for overlap 
-        //check for abut
 
 
         //if last day is true of the check below then the whole array can be skipped
         if (+daysChecked[daysChecked.length-1]>=+lastDay){
-            //have to check for price in overlap... better somehwere else
-            //Will check cost on overlap in another place should be able to skip all together if full overlap of project times
             continue
         }
         //Checking for single day project, also looking at overlap
@@ -159,8 +137,6 @@ const calculateReimbursment =(arr)=>{
         if(+firstDay < +lastDay){
             let lastDayAbut = abutCheck(lastDay, "L", i)
             //check first day abuts after overlap check by using the last day in check days array...!
-            //check 2 day vs longer projects
-            //use difference to then check overlap... might need to return a potental overlap size if last is checked and also indicate a last check?
             //this would also validate overlap because dates are sequential and there won't be a need to see if there is overlap except for the first array
             //do we need to check if there is a project has a first day that doesn't abut before but abuts after when another proejct starts in the middle eg 9/1/15 - 9/3/15 & 9/2/15 - 9/5/15?
             const [check, cost] = overlapCheck(firstDay, i)
@@ -184,7 +160,7 @@ const calculateReimbursment =(arr)=>{
                 }
             }
             //add cost for last day depending on abutting projects
-            //if last day overlaps then 
+            //If last day overlaps then should we take a look at the point of overlap ending... only important if there is a price difference between projects but if there is subtract last day of current project from last day overlap project. then take that number of subtract from total project length. Use different costs * differen lengths to get correct cost. Current sets do not require that validation. 
             if(ldCheck){
                 addCost(lastDay, "F", ldCost)
             }else {
@@ -204,12 +180,6 @@ const calculateReimbursment =(arr)=>{
             
             }
         }
-        
-        if (+daysChecked[daysChecked.length-1] > +firstDay){
-            //Perform last day overlap checks
-            //calculate any non-overlapping middle days
-        }
-        //daysChecked=[]
     }
     
     return reimbursement
