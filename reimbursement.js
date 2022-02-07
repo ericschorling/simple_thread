@@ -46,9 +46,9 @@ const calculateReimbursment =(arr)=>{
     let lastDay = new Date(arr[0][1])
     let daysCost = 0
     let daysChecked = []
-    console.log(lastDay - firstDay)
     let reimbursement = 0
     //should input array be sorted?
+    //Validate input of arrays and sort as needed?
     //create a day checked array to hold already calculated days
     //check firstday abut / overlap by set for all projects against first  and last day (only last day if not first day)
         //check first day against first day to ensure only multi day overlap evaluated
@@ -56,33 +56,98 @@ const calculateReimbursment =(arr)=>{
     //check last day abut / overlap by set for all projects in set conditional on checked day array
     //if no overlap // abut then return travel day
     
-    for (let i = 0; i < arr.length; i++){
-        firstDay = new Date(arr[i][0])
-        lastDay = new Date(arr[i][1])
-        //if last day is true of the check below then the whole array can be skipped
-        if (+daysChecked[daysChecked.length-1]>=+lastDay){
-            //have to check for price in overlap... better somehwere else
-            continue
-        }
-        if (+daysChecked[daysChecked.length-1]>+firstDay){
-            //Perform last day overlap checks
-            //calculate any non-overlapping middle days
-        }
-        for (let j = i+1; j<arr.length; j++ ){
-            let checkDate = +new Date(arr[j][0])
-            if(+firstDay >= checkDate){
-                reimbursement += getCost("F",arr[j][2], arr[i][2])
+     /**
+     * 
+     * @param {object} day - Datetime object for the day being checked for overlap
+     * @param {integer} arrayNum - the array position in the nested array that is being checked 
+     * @returns {[boolean, string]} - returns the result of the check and if it is true returns the cost of the city.
+     */
+    //Raises the question of a triple+ overlap with multiple city costs, seems unlikely but may be worth checking on 
+    const overlapCheck=(day, arrayNum)=>{
+        for(let i = arrayNum + 1; i<= arr.length; i++ ){
+            if(+day >= +arr[arrayNum][0]){
+                return [true, arr[arrayNum][2]]
+            } else {
+                return [false, null]
             }
         }
     }
+    /**
+     * Gets the cost of the city using getCost and then adds it to the reimbursement as well as adding the day to the daysChecked array
+     * @param {string} costType - full / travel day cost for get cost function
+     * @param {*} cityType1 - city type High / Low 
+     * @param {*} cityType2 - city type high / low if overlap comparison is necessary 
+     * @returns {null}
+     */
+    //May be able to remove the two city check based on the overlap check in overlap check function 
+    const addCost = (costType, cityType1, cityType2)=>{
+        reimbursement += getCost(costType, cityType1, cityType2)
+        daysChecked = [...daysChecked, +firstDay]
+        console.log("Reimbursment" + reimbursement)
+    }
 
-    if (+lastDay === +firstDay){
-        daysCost = getCost("F",arr[0][2])
-        console.log("same day "+ "cost "+ daysCost)
+    //loop to check all the projects submitted in the project array
+    for (let i = 0; i < arr.length; i++){
+        firstDay = new Date(arr[i][0])
+        lastDay = new Date(arr[i][1])
+        //Checking to see if the first and last day are the same, all single day projects are considered full days. 
+        //Should skip to the check for overlap only if the city isn't High cost
+
+        
+
+        //if last day is true of the check below then the whole array can be skipped
+        if (+daysChecked[daysChecked.length-1]>=+lastDay){
+            //have to check for price in overlap... better somehwere else
+            //Will check cost on overlap in another place should be able to skip all together if full overlap of project times
+            continue
+        }
+        //Checking for single day project, also looking at overlap
+        if(+firstDay === +lastDay){
+            if(arr[i][2]=== "H"){
+                addCost("F", "H")
+            }
+            else{
+                const [check, cost] = overlapCheck(firstDay, i)
+                if(check){
+                    addCost("F", "H")
+                } else {
+                    addCost("F", "L")
+                }
+            }
+        }
+        // Multi Day project
+        //Check first day overlap, no overlap then 
+        if(+firstDay < +lastDay){
+            console.log(daysChecked)
+            
+            //check first day abuts after overlap check by using the last day in check days array...!
+            //check 2 day vs longer projects
+            //use difference to then check overlap... might need to return a potental overlap size if last is checked and also indicate a last check?
+            //this would also validate overlap because dates are sequential and there won't be a need to see if there is overlap except for the first array
+            //do we need to check if there is a project has a first day that doesn't abut before but abuts after when another proejct starts in the middle eg 9/1/15 - 9/3/15 & 9/2/15 - 9/5/15?
+            const [check, cost] = overlapCheck(firstDay, i)
+            if(i === 0 ){
+                if(check){
+                    addCost("F", cost)
+                }
+            }
+            if(+firstDay > +daysChecked[daysChecked-1]){
+                //check abutment by looking at last day of days checked array plus 1 day, if greater then shouldn't abut
+                if(+firstDay > +daysChecked[daysChecked-1] + dayInMils){
+                    addCost("T", arr[i][2])
+                    console.log(+daysChecked[daysChecked-1] + dayInMils)
+                } else {
+                    addCost("F", arr[i][2])
+                }
+            }
+        }
+        
+        if (+daysChecked[daysChecked.length-1] > +firstDay){
+            //Perform last day overlap checks
+            //calculate any non-overlapping middle days
+        }
     }
-    else {
-        console.log(Math.floor((lastDay - firstDay)/dayInMils))
-    }
+
     return reimbursement
 }
 
