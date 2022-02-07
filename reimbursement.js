@@ -72,11 +72,12 @@ const calculateReimbursment =(arr)=>{
             let checkDate = new Date(arr[arrNum][0])
             let cityCost
             if(+day >= +checkDate){
-                arr[arrayNum][2] === "H" ? cityCost = "H" : arr[arrayNum][2] ==="H" ? cityCost = "H" : cityCost = "L"
-                    return [true, cityCost]
+                arr[arrayNum][2] === "H" ? cityCost = "H" : arr[arrNum][2] ==="H" ? cityCost = "H" : cityCost = "L"
+                return [true, cityCost]
             } else {
                 return [false, null]
             }
+
         }
     }
     /**
@@ -88,7 +89,6 @@ const calculateReimbursment =(arr)=>{
      */
     //May be able to remove the two city check based on the overlap check in overlap check function 
     const addCost = (day, costType, cityType1)=>{
-        console.log("adding cost ", day, costType, cityType1, getCost(costType, cityType1))
         reimbursement += getCost(costType, cityType1)
         daysChecked = [...daysChecked, day]
     }
@@ -106,7 +106,6 @@ const calculateReimbursment =(arr)=>{
             for(let arrNum = arrNumber + 1; arrNum < arr.length; arrNum++ ){
                 let checkDate = new Date(arr[arrNum][0])
                 if(+day + dayInMils === +checkDate ){
-                    console.log("abuts", day, checkDate)
                     return true
                 }
             }
@@ -122,7 +121,6 @@ const calculateReimbursment =(arr)=>{
     //loop to check all the projects submitted in the project array
     //need to add a skip to this loop if only one project
     for (let i = 0; i < arr.length; i++){
-        console.log('reimbursement:' + reimbursement)
         firstDay = new Date(arr[i][0])
         lastDay = new Date(arr[i][1])
         let cityType = arr[i][2]
@@ -143,14 +141,15 @@ const calculateReimbursment =(arr)=>{
         //Checking for single day project, also looking at overlap
         if(+firstDay === +lastDay){
             if(arr[i][2]=== "H"){
+
                 addCost(firstDay, "F", "H")
             }
             else{
                 const [check, cost] = overlapCheck(firstDay, i)
                 if(check){
-                    addCost(firstDay, "F", "H")
+                    addCost(firstDay, "F", cost)
                 } else {
-                    addCost(firstDay, "F", "L")
+                    addCost(firstDay, "F", cityType)
                 }
             }
             continue
@@ -169,6 +168,7 @@ const calculateReimbursment =(arr)=>{
             //if its the first array check on the first day overlapping subsequent projects
             if(i === 0 ){
                 if(check){
+                    
                     addCost(firstDay, "F", cost)
                 } else {
                     addCost(firstDay, "T", cityType)
@@ -176,12 +176,9 @@ const calculateReimbursment =(arr)=>{
             }else {
                 //else work on the first day as long as it is greater than the last day in the array which would indicate no overlap
                 if(+firstDay > +daysChecked[daysChecked.length-1]){
-                    console.log(+firstDay, +daysChecked[daysChecked.length-1]+ dayInMils)
                     if(+firstDay === +daysChecked[daysChecked.length-1]+ dayInMils){
-                        
                         addCost(firstDay, "F", cityType)
                     } else {
-                        console.log(false)
                         addCost(firstDay, "T", cityType)
                     }
                 }
@@ -189,11 +186,9 @@ const calculateReimbursment =(arr)=>{
             //add cost for last day depending on abutting projects
             //if last day overlaps then 
             if(ldCheck){
-                console.log("overlap last day" + ldCost)
                 addCost(lastDay, "F", ldCost)
             }else {
                 if(lastDayAbut){
-                    console.log("yes")
                     addCost(lastDay, "F", cityType)
                 } else {
                     addCost(lastDay, "T", cityType)
@@ -205,8 +200,6 @@ const calculateReimbursment =(arr)=>{
             if((+lastDay - +firstDay)/ dayInMils >1){
                 let projectLength = Math.floor((+lastDay - +firstDay) / dayInMils)-1
                 //if no overlap for last day then just days added in
-            
-                console.log("multiday" + projectLength * getCost("F", cityType))
                 reimbursement += projectLength * getCost("F", cityType)
             
             }
@@ -228,11 +221,11 @@ const set1 = [["9/1/2015","9/3/2015","L"]]
 const set2 = [["9/1/2015", "9/1/2015","L"],["9/2/2015","9/6/2015","H"], ["9/6/2015","9/8/2015","L"]]
 //Should be 475
 const set3 = [["9/1/2015", "9/3/2015", "L"], ["9/5/2015","9/7/2015","H"], ["9/8/2015", "9/8/2015","H"]]
-//Should be 245
+//Should be 215
 const set4 = [["9/1/15","9/1/15","L"],["9/1/15","9/1/2015","L"],["9/2/2015","9/2/2015","H"],["9/2/2015","9/3/2015","H"]]
 
-//console.log(calculateReimbursment(set1))
-//console.log(calculateReimbursment(set2))
-//console.log(calculateReimbursment(set3))
-//console.log(calculateReimbursment(set4))
+console.log(calculateReimbursment(set1))
+console.log(calculateReimbursment(set2))
+console.log(calculateReimbursment(set3))
+console.log(calculateReimbursment(set4))
 
