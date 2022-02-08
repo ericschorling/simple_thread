@@ -185,6 +185,19 @@ const calculateReimbursment =(arr)=>{
                     }
                 }
             }
+            //check for multi day projects
+            //Should I check for multi day multi day overlaps?
+            let overlapDays = 0
+            if((+lastDay - +firstDay)/ dayInMils >1){
+                if(i > 0){
+                    if((+daysChecked[daysChecked.length-1] - +firstDay)/dayInMils > 0){
+                        overlapDays = (+daysChecked[daysChecked.length-1] - +firstDay)/dayInMils
+                    }
+                }
+                let projectLength = Math.floor((+lastDay - +firstDay) / dayInMils)-1 - overlapDays
+                //if no overlap for last day then just days added in
+                reimbursement += projectLength * getCost("F", cityType)
+            }
             //add cost for last day depending on abutting projects
             //If last day overlaps then should we take a look at the point of overlap ending... only important if there is a price difference between projects but if there is subtract last day of current project from last day overlap project. then take that number of subtract from total project length. Use different costs * differen lengths to get correct cost. Current sets do not require that validation. 
             if(ldCheck){
@@ -197,13 +210,7 @@ const calculateReimbursment =(arr)=>{
                 }
             }
 
-            //check for multi day projects
-            //Should I check for multi day multi day overlaps?
-            if((+lastDay - +firstDay)/ dayInMils >1){
-                let projectLength = Math.floor((+lastDay - +firstDay) / dayInMils)-1
-                //if no overlap for last day then just days added in
-                reimbursement += projectLength * getCost("F", cityType)
-            }
+            
         }
     }
     
