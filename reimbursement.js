@@ -60,7 +60,7 @@ const dataValidation = (arr)=>{
  * @returns {integer} reimbursement which is the total value of the time worked.
  */
 const calculateReimbursment =(arr)=>{
-
+    
     const dayInMils = 86400000   
     let firstDay 
     let lastDay
@@ -146,7 +146,6 @@ const calculateReimbursment =(arr)=>{
         //Checking for single day project, also looking at overlap
         if(+firstDay === +lastDay){
             if(arr[i][2]=== "H"){
-
                 addCost(firstDay, "F", "H")
             }
             else{
@@ -165,19 +164,19 @@ const calculateReimbursment =(arr)=>{
             let lastDayAbut = abutCheck(lastDay, "L", i)
             //check first day abuts after overlap check by using the last day in check days array...!
             //this would also validate overlap because dates are sequential and there won't be a need to see if there is overlap except for the first array
-            //do we need to check if there is a project has a first day that doesn't abut before but abuts after when another proejct starts in the middle eg 9/1/15 - 9/3/15 & 9/2/15 - 9/5/15?
             const [check, cost] = overlapCheck(firstDay, i)
             const [ldCheck, ldCost] = overlapCheck(lastDay, i)
             //if its the first array check on the first day overlapping subsequent projects
             if(i === 0 ){
+                
                 if(check){
-                    
                     addCost(firstDay, "F", cost)
                 } else {
                     addCost(firstDay, "T", cityType)
                 }
             }else {
                 //else work on the first day as long as it is greater than the last day in the array which would indicate no overlap
+                
                 if(+firstDay > +daysChecked[daysChecked.length-1]){
                     if(+firstDay === +daysChecked[daysChecked.length-1]+ dayInMils){
                         addCost(firstDay, "F", cityType)
@@ -224,4 +223,4 @@ console.log(calculateReimbursment(set1))
 console.log(calculateReimbursment(set2))
 console.log(calculateReimbursment(set3))
 console.log(calculateReimbursment(set4))
-console.log(calculateReimbursment([["9/1/2015","oops","H"],["oops", "9/3/2015", "P"]]))
+
