@@ -194,6 +194,7 @@ const calculateReimbursment =(arr)=>{
                         overlapDays = (+daysChecked[daysChecked.length-1] - +firstDay)/dayInMils
                     }
                 }
+                
                 let projectLength = Math.floor((+lastDay - +firstDay) / dayInMils)-1 - overlapDays
                 //if no overlap for last day then just days added in
                 reimbursement += projectLength * getCost("F", cityType)
