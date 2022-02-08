@@ -1,6 +1,32 @@
 'use strict'
 /**
  * 
+ * @param {[string[]]} arr Array of string arrays that have the date and cost information needed for the reimbursement calculations
+ * @returns {null}
+ */
+const dataValidation = (arr)=>{
+    if(!Array.isArray(arr)){
+        console.error("The input object is not an array")
+    }
+    for(let arrCheck = 0; arrCheck < arr.length; arrCheck++){
+        if(!Array.isArray(arr[arrCheck])){
+            console.error(`The number ${arrCheck+1} array is not the correct object. Seeing ${arr[arrCheck]}, instead of an array`)
+        }
+        let checkFirst = new Date(arr[arrCheck][0]).toDateString()
+        let checkLast = new Date(arr[arrCheck][1]).toDateString()
+        if(arr[arrCheck][2] !== "H" && arr[arrCheck][2] !== "L"){
+            console.error(`The city cost is not a correct entry seeing ${arr[arrCheck][2]} instead of "H" or "L" `)
+            console.error(`Error in ${arrCheck+1} array`)
+        }
+
+        if(checkFirst === "Invalid Date" || checkLast ==="Invalid Date"){
+            console.error(`One of the dates entered is not in the correct format seeing ${arr[arrCheck][0]} for the start date and ${arr[arrCheck][1]} for the second date.`)
+            console.error(`Error occuring in ${arrCheck + 1} array`)
+        }
+    }
+}
+/**
+ * 
  * @param {string} costType cost type in full ("F") or travel ("T") days
  * @param {string} cityType city type in low cost ("L") or high cost ("H")
  * @returns {integer} reimbursement rate for the day and type of city
@@ -34,6 +60,7 @@
  * @returns {integer} reimbursement which is the total value of the time worked.
  */
 const calculateReimbursment =(arr)=>{
+
     const dayInMils = 86400000   
     let firstDay 
     let lastDay
@@ -177,7 +204,6 @@ const calculateReimbursment =(arr)=>{
                 let projectLength = Math.floor((+lastDay - +firstDay) / dayInMils)-1
                 //if no overlap for last day then just days added in
                 reimbursement += projectLength * getCost("F", cityType)
-            
             }
         }
     }
@@ -198,4 +224,4 @@ console.log(calculateReimbursment(set1))
 console.log(calculateReimbursment(set2))
 console.log(calculateReimbursment(set3))
 console.log(calculateReimbursment(set4))
-
+console.log(calculateReimbursment([["9/1/2015","oops","H"],["oops", "9/3/2015", "P"]]))
