@@ -97,12 +97,12 @@ const calculateReimbursment =(arr)=>{
      * Gets the cost of the city using getCost and then adds it to the reimbursement as well as adding the day to the daysChecked array
      * @param {Object} day - date time object for the day to be added to the array
      * @param {string} costType - full / travel day cost for get cost function
-     * @param {*} cityType1 - city type High / Low 
+     * @param {*} cityType - city type High / Low 
      * @returns {null}
      */
     //May be able to remove the two city check based on the overlap check in overlap check function 
-    const addCost = (day, costType, cityType1)=>{
-        reimbursement += getCost(costType, cityType1)
+    const addCost = (day, costType, cityType)=>{
+        reimbursement += getCost(costType, cityType)
         daysChecked = [...daysChecked, day]
     }
 
